@@ -9,6 +9,10 @@ var soundSchema = new Schema({
         min: 0,
         max: 1024,
         required: true
+    },
+    ledStatus: {
+        type: Boolean,
+        required: true
     }
 }, {
     timestamps: true

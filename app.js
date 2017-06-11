@@ -15,6 +15,7 @@ var topic = 'soundInput';
 // Require routes
 var index = require('./routes/index');
 var users = require('./routes/users');
+var sounds = require('./routes/sounds');
 
 var app = express();
 
@@ -59,37 +60,54 @@ db.once('open', () => {
   //Listen for published messages
   mqttClient.on('message', (topic, message) => {
     //console.log('Topic:', topic, '\nMessage:', input);
-    // Control flow to determine topic
-    if (topic == 'ledChange') {
-      console.log('MQTT ledChange event');
-      var status = message.toString('UTF-8');
-      console.log(status);
-      io.emit('ledChangeFromPi', status);
-
-    } else if (topic == 'soundInput') {
       console.log('MQTT soundInput event');
       // Message is buffer
-      var input = parseFloat(message);
+      var payload = JSON.parse(message.toString('UTF-8'));
+      //var input = parseFloat(message);
 
       // Instantiate sound input object
       var soundInputObj = {};
-      soundInputObj.value = input;
+      soundInputObj.value = parseFloat(payload.soundValue);
+      soundInputObj.ledStatus = payload.ledStatus;
+
+      var temporaryResult = null;
+
+      var currentDate = new Date();
+      var currentYear = currentDate.getFullYear();
+      var currentMonth = currentDate.getMonth() + 1;
+      var currentDate = currentDate.getDate();
+      var startTime = '00:00:00.000';
+      var endTime = '23:59:59:999';
+
+      var gteTimestamp = currentYear + '-' + currentMonth + '-' + currentDate + ' ' + startTime;
+      var lteTimestamp = currentYear + '-' + currentMonth + '-' + currentDate + ' ' + endTime;
+      
+
+      //var currentTimestamp = TimeStamp(new Date(currentYear, currentMonth, currentDate), 0);
+      console.log(gteTimestamp, lteTimestamp);
 
       // Commit soundInputObj to database
       Sound.create(soundInputObj)
         .then((result) => {
-          console.log('Just added to db:', result.value, 'at:', result.createdAt);
+          console.log('Just added to db:', result.value, result.ledStatus, 'at:', result.createdAt);
+          temporaryResult = result; 
+          //Find all ledStatus == true from db
+          return Sound.find({ 'ledStatus': true, 'createdAt': { '$gte': gteTimestamp, '$lte': lteTimestamp } });
+        })
+        .then((instance) => {
+          console.log(instance.length);
           // Emit 'mqtt' event for Socket.IO Web Client
           io.emit('publish', {
             topic: topic,
-            value: result.value,
-            createdAt: result.createdAt
+            value: temporaryResult.value,
+            ledStatus: temporaryResult.ledStatus,
+            activatedCounter: instance.length,
+            createdAt: temporaryResult.createdAt
           });
         })
         .catch((err) => {
           console.log('Error occured:', err);
         });
-    } // End of else if
   });
 });
 
@@ -109,6 +127,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', index);
 app.use('/users', users);
+app.use('/api/sounds', sounds);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

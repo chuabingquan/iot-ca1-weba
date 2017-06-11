@@ -121,7 +121,7 @@ License URL: http://creativecommons.org/licenses/by/3.0/
 						<div class="content-top-1">
 							<div class="col-md-6 top-content">
 								<h5>LED</h5>
-								<label id = "ledLabel">Off</label>
+								<label id="ledLabel">Off</label>
 								<br>
 								<label class="switch">
   									<input type="checkbox" id="ledSwitch" class="cbToggle">
@@ -135,22 +135,26 @@ License URL: http://creativecommons.org/licenses/by/3.0/
 						</div>
 						<div class="content-top-1">
 							<div class="col-md-6 top-content">
-								<h5>Mircrophone</h5>
-								<label>Off</label>
-
-							</div>
-							<div class="col-md-6 top-content1">
-								<div id="demo-pie-2" class="pie-title-center" data-percent="50"> <span class="pie-value"></span> </div>
+								<h5>No of Nusiances</h5>
+								<label id="activatedCounter">---</label>
 							</div>
 							<div class="clearfix"> </div>
 						</div>
 						<div class="content-top-1">
 							<div class="col-md-6 top-content">
-								<h5>Volume</h5>
-								<label>Moderate</label>
+								<h5>Top 3 Nusiances Yesterday</h5>
+								<!--<label>Moderate</label>-->
+								<br>
+								<div>
+									<ul style="list-style: none"  id = "top3list">
+										<!--<li><label>800.45</label></li>
+										<li><label>552.53</label></li>
+										<li><label>244.42</label></li>-->
+									</ul>
+								</div>
 							</div>
 							<div class="col-md-6 top-content1">
-								<div id="demo-pie-3" class="pie-title-center" data-percent="75"> <span class="pie-value"></span> </div>
+
 							</div>
 							<div class="clearfix"> </div>
 						</div>
@@ -169,29 +173,51 @@ License URL: http://creativecommons.org/licenses/by/3.0/
 									var $microphoneSwitch = $('#microphoneSwitch');
 
 									$ledSwitch.change(() => {
-										if($ledSwitch.is(':checked')){
+										if ($ledSwitch.is(':checked')) {
 											$ledLabelElement.text('On');
 											console.log('Checked!');
-											emitSocket('toggle', { type: 'led', status: 'on' });
+											emitSocket('toggle', {
+												type: 'led',
+												status: 'on'
+											});
 											//socket.emit('toggle', { type: 'led', status: 'on' });
-										}
-										else {
+										} else {
 											$ledLabelElement.text('Off');
 											console.log('Unchecked!');
-											socket.emit('toggle', { type: 'led', status: 'off' });
+											socket.emit('toggle', {
+												type: 'led',
+												status: 'off'
+											});
 										}
 									});
+									
+									var $getTop3Handler = $.ajax({
+										url: '/api/sounds/getTopNuisanceYesterday',
+										method: 'GET',
+										dataType: 'json',
+										cache: false
+									});
 
-									$microphoneSwitch.change(() => {
-										if($microphoneSwitch.is(':checked')){
-											console.log('Checked!');
-											emitSocket('toggle', { type: 'microphone', status: 'on' });
-											//socket.emit('toggle', { type: 'led', status: 'on' });
-										}
-										else {
-											console.log('Unchecked!');
-											socket.emit('toggle', { type: 'microphone', status: 'off' });
-										}
+									$getTop3Handler.done((data, textStatus, jqXHR) => {
+										console.log('IN');
+										console.log('Top 3:', data);
+										data.forEach((item) => {
+											var $liElement = $('<li></li>');
+											var $labelElement = $('<label></label>');
+											var $paragraphElement = $('<p></p>');
+											var date = new Date(item.createdAt);
+
+											$labelElement.text(item.value);
+											$paragraphElement.text('At ' + date.getHours() + ':' + ('0' + date.getMinutes()).slice(-2) + ':' + date.getSeconds());
+											$liElement.append($labelElement);
+											$liElement.append($paragraphElement);
+											$('#top3list').append($liElement);
+										}, this);	
+									});
+
+									$getTop3Handler.fail((data, textStatus, jqXHR) => {
+										console.log('IN 2');
+										alert('Error: ', data.message);
 									});
 								});
 							</script>
@@ -215,7 +241,7 @@ License URL: http://creativecommons.org/licenses/by/3.0/
 
 
 				<div class="copy">
-					<p> &copy; IOT CA1 Chua Bing Quan. All Rights Reserved | Design by <a href="http://w3layouts.com/" target="_blank">W3layouts</a>	
+					<p> &copy; IOT CA1 Chua Bing Quan. All Rights Reserved | Design by <a href="http://w3layouts.com/" target="_blank">W3layouts</a>
 				</div>
 			</div>
 			<div class="clearfix"> </div>
