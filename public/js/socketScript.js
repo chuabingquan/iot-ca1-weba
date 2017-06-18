@@ -8,53 +8,30 @@ function intializeSocket() {
         console.log('Socket.IO Connected to server!');
 
         // Initialize default empty chart
-        generateChart();
-
-        //On ledChangeEvent
-        // socket.on('ledChangeFromPi', (data) => {
-
-        //     if (firstTime) {
-        //         var $ledInput = $('#ledSwitch');
-        //         var $ledLabel = $('#ledLabel');
-
-        //         data = JSON.parse(data);
-        //         console.log('Initial LED Status from socket:', data.status);
-        //         if (data.status == 'on') {
-        //             $ledInput.prop('checked', true);
-        //             $ledLabel.text('On');
-        //             console.log('Initial led status: On');
-        //         }
-        //         else {
-        //             $ledInput.prop('checked', false);
-        //             console.log('Initial led status: Off');
-        //         }
-
-        //         firstTime = false;
-        //     }
-        // });
+        loadChart();
 
         //On publish event
         socket.on('publish', (data) => {
             console.log('Sound data in:', data);
 
-            if (firstTime) {
-                var $ledInput = $('#ledSwitch');
-                var $ledLabel = $('#ledLabel');
+            // if (firstTime) {
+            //     var $ledInput = $('#ledSwitch');
+            //     var $ledLabel = $('#ledLabel');
 
-                //data = JSON.parse(data);
-                console.log('Initial LED Status from socket:', data.ledStatus);
-                if (data.ledStatus == true) {
-                    $ledInput.prop('checked', true);
-                    $ledLabel.text('On');
-                    console.log('Initial led status: On');
-                } else {
-                    $ledInput.prop('checked', false);
-                    $ledLabel.text('Off');
-                    console.log('Initial led status: Off');
-                }
+            //     //data = JSON.parse(data);
+            //     console.log('Initial LED Status from socket:', data.ledStatus);
+            //     if (data.ledStatus == true) {
+            //         $ledInput.prop('checked', true);
+            //         $ledLabel.text('On');
+            //         console.log('Initial led status: On');
+            //     } else {
+            //         $ledInput.prop('checked', false);
+            //         $ledLabel.text('Off');
+            //         console.log('Initial led status: Off');
+            //     }
 
-                firstTime = false;
-            }
+            //     firstTime = false;
+            // }
 
             // Update Nusiance counter/number of time led is triggered/activated 
             // because people are too loud
@@ -62,10 +39,10 @@ function intializeSocket() {
 
             //Prepare data for input
             var createdDate = new Date(data.createdAt);
-            var dataInput = [createdDate.getHours(), data.value];
+            var dataInput = [createdDate.getHours() + ':' + createdDate.getMinutes() + ':' + createdDate.getSeconds(), data.value];
 
             //Pass data to generateChart.js
-            generateChart(dataInput);
+            updateChartData(dataInput);
         });
     });
 

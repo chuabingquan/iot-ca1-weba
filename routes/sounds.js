@@ -10,7 +10,7 @@ router.route('/getTopNuisanceYesterday')
         var currentDate = new Date();
         var currentYear = currentDate.getFullYear();
         var currentMonth = currentDate.getMonth() + 1;
-        var currentDate = currentDate.getDate();
+        var currentDate = currentDate.getDate() - 1;
         var startTime = '00:00:00.000';
         var endTime = '23:59:59:999';
 
