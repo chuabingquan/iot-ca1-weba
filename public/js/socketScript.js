@@ -1,5 +1,5 @@
 var firstTime = true;
-var socket = io('http://localhost:3000');
+var socket = io('/');
 
 // Initializes socket.IO connection to server
 function intializeSocket() {
