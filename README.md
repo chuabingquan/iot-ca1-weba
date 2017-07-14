@@ -1,6 +1,8 @@
 # iot-ca1-weba
 NodeJS Web Application for Internet Of Things Assignment Part 1.
 
+![alt text](https://github.com/chuabingquan/iot-ca1-weba/blob/master/screenshot-iot-ca1-weba.png "IoT CA1 Web Application")
+
 ### Description
 For my Internet of Things module, I decided to prototype a proof of concept of an IoT solution that flashes light at an area in a library when users would to get too loud.
 This would deter library users from disturbing the silence, allowing librarians to focus on shelving books and other administratives.
