@@ -9,7 +9,7 @@ This would deter library users from disturbing the silence, allowing librarians 
 
 This IoT solution comprises of two parts,
 1. Web Application Console
-2. Raspberry Pi Program
+2. Raspberry Pi Program (![Repository](https://github.com/chuabingquan/iot-ca1-rpi))
 
 ### Implementation
 The web application console for this IoT solution utilizes NodeJS, Express, Mongoose, Socket.IO and MQTT to bridge between the web client and the Raspberry Pi device to allow for control and monitoring of the entire solution.
